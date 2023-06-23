@@ -29,11 +29,11 @@ const getUserById = (req, res) => {
     .catch((err) => {
       if (err.message === "Not found") {
         res
-          .status(400)
+          .status(404)
           .send({ message: "Пользователь по указанному _id не найден." });
       } else {
         res
-          .status(500)
+          .status(400)
           .send({ message: "Internal server Error", err: err.message });
       }
     });
@@ -66,6 +66,18 @@ const createUser = (req, res) => {
 
 const updateUserInfo = (req, res) => {
   const { name, about } = req.body;
+  if (
+    name.length < 2 ||
+    name.length > 30 ||
+    about.length < 2 ||
+    about.length > 30
+  ) {
+    res.status(400).send({
+      message: "Переданы некорректные данные при обновлении профиля.",
+    });
+    return;
+  }
+
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
     .orFail(() => new Error("Not found"))
     .then((user) => res.status(200).send(user))
@@ -74,22 +86,11 @@ const updateUserInfo = (req, res) => {
         res
           .status(404)
           .send({ message: "Пользователь по указанному _id не найден." });
-        return;
+      } else {
+        res
+          .status(500)
+          .send({ message: "Internal server Error", err: err.message });
       }
-      if (
-        name.length < 2 ||
-        name.length > 30 ||
-        about.length < 2 ||
-        about.length > 30
-      ) {
-        res.status(400).send({
-          message: "Переданы некорректные данные при обновлении профиля.",
-        });
-        return;
-      }
-      res
-        .status(500)
-        .send({ message: "Internal server Error", err: err.message });
     });
 };
 
