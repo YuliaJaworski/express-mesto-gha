@@ -45,18 +45,17 @@ const createCard = (req, res) => {
   console.log(req.user._id);
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
-    .orFail(() => new Error("Not found"))
     .then((card) => res.status(201).send(card))
     .catch((err) => {
-      if (err.message === "Not found") {
+      if ((!name || !link, name.length < 2 || name.length > 30)) {
         res.status(400).send({
           message: "Переданы некорректные данные при создании карточки.",
         });
-      } else {
-        res
-          .status(500)
-          .send({ message: "Internal server Error", err: err.message });
+        return;
       }
+      res
+        .status(500)
+        .send({ message: "Internal server Error", err: err.message });
     });
 };
 
@@ -70,14 +69,15 @@ const likeCard = (req, res) => {
     .then((like) => res.status(200).send(like))
     .catch((err) => {
       if (err.message === "Not found") {
-        res.status(400).send({
+        res.status(404).send({
           message: "Переданы некорректные данные для постановки/снятии лайка.",
         });
-      } else {
-        res
-          .status(500)
-          .send({ message: "Internal server Error", err: err.message });
+        return;
       }
+      res.status(400).send({
+        message: "Передан несуществующий _id карточки.",
+        err: err.message,
+      });
     });
 };
 
@@ -91,13 +91,16 @@ const dislikeCard = (req, res) => {
     .then((like) => res.status(200).send(like))
     .catch((err) => {
       if (err.message === "Not found") {
-        res.status(400).send({
+        res.status(404).send({
           message: "Переданы некорректные данные для постановки/снятии лайка.",
         });
       } else {
         res
-          .status(500)
-          .send({ message: "Internal server Error", err: err.message });
+          .status(400)
+          .send({
+            message: "Передан несуществующий _id карточки.",
+            err: err.message,
+          });
       }
     });
 };
