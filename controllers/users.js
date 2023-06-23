@@ -45,11 +45,13 @@ const createUser = (req, res) => {
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (
-        (!name || !about || !avatar,
+        !name ||
+        !about ||
+        !avatar ||
         name.length < 2 ||
-          name.length > 30 ||
-          about.length < 2 ||
-          about.length > 30)
+        name.length > 30 ||
+        about.length < 2 ||
+        about.length > 30
       ) {
         res
           .status(400)
