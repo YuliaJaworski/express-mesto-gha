@@ -27,7 +27,7 @@ const getCards = (req, res) => {
 const deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.id)
     .orFail(() => new Error("Not found"))
-    .then((card) => res.status(200).send(card))
+    .then(() => res.status(200).send({ message: "Карточка удалена" }))
     .catch((err) => {
       if (err.message === "Not found") {
         res

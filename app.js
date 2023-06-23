@@ -25,6 +25,10 @@ app.use((req, res, next) => {
 app.use(userRoutes);
 app.use(cardRoutes);
 
+app.use("*", (req, res) => {
+  res.send({ message: "Произошла ошибка на сервере" });
+});
+
 app.listen(3000, () => {
   console.log("Слушаю порт 3000");
 });
