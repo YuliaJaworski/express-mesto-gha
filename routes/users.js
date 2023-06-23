@@ -1,12 +1,23 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable quotes */
 /* eslint-disable linebreak-style */
 const router = require("express").Router();
-const { getUsers, getUserById, createUser } = require("../controllers/users");
+const {
+  getUsers,
+  getUserById,
+  createUser,
+  updateUserInfo,
+  updateUserAvatar,
+} = require("../controllers/users");
 
 router.get("/users", getUsers);
 
 router.get("/users/:id", getUserById);
 
 router.post("/users", createUser);
+
+router.patch("/users/me", updateUserInfo);
+
+router.patch("/users/me/avatar", updateUserAvatar);
 
 module.exports = router;
