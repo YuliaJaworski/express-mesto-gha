@@ -1,3 +1,5 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable comma-dangle */
 /* eslint-disable operator-linebreak */
 /* eslint-disable linebreak-style */
 /* eslint-disable implicit-arrow-linebreak */
