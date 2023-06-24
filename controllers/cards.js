@@ -28,7 +28,7 @@ const deleteCardById = (req, res) => {
           .send({ message: "Карточка с указанным _id не найдена." });
       } else {
         res
-          .status(400)
+          .status(500)
           .send({ message: "Internal server Error", err: err.message });
       }
     });
@@ -40,7 +40,7 @@ const createCard = (req, res) => {
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
-      if (!name || !link || name.length < 2 || name.length > 30) {
+      if (err.name === "ValidationError") {
         res.status(400).send({
           message: "Переданы некорректные данные при создании карточки.",
         });
@@ -65,11 +65,15 @@ const likeCard = (req, res) => {
         res.status(404).send({
           message: "Переданы некорректные данные для постановки/снятии лайка.",
         });
-      } else {
+      } else if (err.name === "CastError") {
         res.status(400).send({
           message: "Передан несуществующий _id карточки.",
           err: err.message,
         });
+      } else {
+        res
+          .status(500)
+          .send({ message: "Internal server Error", err: err.message });
       }
     });
 };
@@ -87,11 +91,15 @@ const dislikeCard = (req, res) => {
         res.status(404).send({
           message: "Переданы некорректные данные для постановки/снятии лайка.",
         });
-      } else {
+      } else if (err.name === "CastError") {
         res.status(400).send({
           message: "Передан несуществующий _id карточки.",
           err: err.message,
         });
+      } else {
+        res
+          .status(500)
+          .send({ message: "Internal server Error", err: err.message });
       }
     });
 };

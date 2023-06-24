@@ -31,9 +31,13 @@ const getUserById = (req, res) => {
         res
           .status(404)
           .send({ message: "Пользователь по указанному _id не найден." });
+      } else if (err.name === "CastError") {
+        res.status(400).send({
+          message: "Переданы некорректные данные при создании пользователя.",
+        });
       } else {
         res
-          .status(400)
+          .status(500)
           .send({ message: "Internal server Error", err: err.message });
       }
     });
@@ -44,15 +48,7 @@ const createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(201).send(user))
     .catch((err) => {
-      if (
-        !name ||
-        !about ||
-        !avatar ||
-        name.length < 2 ||
-        name.length > 30 ||
-        about.length < 2 ||
-        about.length > 30
-      ) {
+      if (err.name === "ValidationError") {
         res
           .status(400)
           .send({ message: "Переданы некорректные данные пользователя." });
@@ -88,9 +84,16 @@ const updateUserInfo = (req, res) => {
         res
           .status(404)
           .send({ message: "Пользователь по указанному _id не найден." });
-      } else {
+      } else if (err.name === "ValidationError") {
         res
           .status(400)
+          .send({
+            message: "Переданы некорректные данные при обновлении профиля",
+            err: err.message,
+          });
+      } else {
+        res
+          .status(500)
           .send({ message: "Internal server Error", err: err.message });
       }
     });
@@ -106,6 +109,13 @@ const updateUserAvatar = (req, res) => {
         res
           .status(404)
           .send({ message: "Пользователь по указанному _id не найден." });
+      } else if (err.name === "ValidationError") {
+        res
+          .status(400)
+          .send({
+            message: "Переданы некорректные данные при обновлении профиля",
+            err: err.message,
+          });
       } else {
         res
           .status(500)
