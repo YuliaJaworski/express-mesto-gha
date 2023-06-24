@@ -63,20 +63,13 @@ const createUser = (req, res) => {
 const updateUserInfo = (req, res) => {
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, about },
+    { new: true, runValidators: true }
+  )
     .orFail(() => new Error("Not found"))
     .then((user) => {
-      if (
-        name.length < 2 ||
-        name.length > 30 ||
-        about.length < 2 ||
-        about.length > 30
-      ) {
-        res.status(400).send({
-          message: "Переданы некорректные данные при обновлении профиля.",
-        });
-        return;
-      }
       res.status(200).send(user);
     })
     .catch((err) => {
@@ -85,12 +78,10 @@ const updateUserInfo = (req, res) => {
           .status(404)
           .send({ message: "Пользователь по указанному _id не найден." });
       } else if (err.name === "ValidationError") {
-        res
-          .status(400)
-          .send({
-            message: "Переданы некорректные данные при обновлении профиля",
-            err: err.message,
-          });
+        res.status(400).send({
+          message: "Переданы некорректные данные при обновлении профиля",
+          err: err.message,
+        });
       } else {
         res
           .status(500)
@@ -109,13 +100,6 @@ const updateUserAvatar = (req, res) => {
         res
           .status(404)
           .send({ message: "Пользователь по указанному _id не найден." });
-      } else if (err.name === "ValidationError") {
-        res
-          .status(400)
-          .send({
-            message: "Переданы некорректные данные при обновлении профиля",
-            err: err.message,
-          });
       } else {
         res
           .status(500)
