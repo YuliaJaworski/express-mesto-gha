@@ -90,7 +90,7 @@ const updateUserInfo = (req, res) => {
           .send({ message: "Пользователь по указанному _id не найден." });
       } else {
         res
-          .status(500)
+          .status(400)
           .send({ message: "Internal server Error", err: err.message });
       }
     });
