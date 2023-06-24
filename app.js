@@ -26,7 +26,7 @@ app.use(userRoutes);
 app.use(cardRoutes);
 
 app.use("*", (req, res) => {
-  res.send({ message: "Произошла ошибка на сервере" });
+  res.status(404).send({ message: "Произошла ошибка на сервере" });
 });
 
 app.listen(3000, () => {

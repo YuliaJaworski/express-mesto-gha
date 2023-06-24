@@ -51,11 +51,11 @@ const createCard = (req, res) => {
         res.status(400).send({
           message: "Переданы некорректные данные при создании карточки.",
         });
-        return;
+      } else {
+        res
+          .status(500)
+          .send({ message: "Internal server Error", err: err.message });
       }
-      res
-        .status(500)
-        .send({ message: "Internal server Error", err: err.message });
     });
 };
 
@@ -72,12 +72,12 @@ const likeCard = (req, res) => {
         res.status(404).send({
           message: "Переданы некорректные данные для постановки/снятии лайка.",
         });
-        return;
+      } else {
+        res.status(400).send({
+          message: "Передан несуществующий _id карточки.",
+          err: err.message,
+        });
       }
-      res.status(400).send({
-        message: "Передан несуществующий _id карточки.",
-        err: err.message,
-      });
     });
 };
 
