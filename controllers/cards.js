@@ -9,23 +9,16 @@ const Card = require("../models/card");
 
 const getCards = (req, res) => {
   Card.find({})
-    .orFail(() => new Error("Not found"))
     .then((cards) => res.status(200).send(cards))
     .catch((err) => {
-      if (err.message === "Not found") {
-        res.status(400).send({
-          message: "Переданы некорректные данные при создании карточки.",
-        });
-      } else {
-        res
-          .status(500)
-          .send({ message: "Internal server Error", err: err.message });
-      }
+      res
+        .status(500)
+        .send({ message: "Internal server Error", err: err.message });
     });
 };
 
 const deleteCardById = (req, res) => {
-  Card.findByIdAndDelete(req.params.id)
+  Card.findByIdAndRemove(req.params.id)
     .orFail(() => new Error("Not found"))
     .then(() => res.status(200).send({ message: "Карточка удалена" }))
     .catch((err) => {
