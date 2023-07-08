@@ -1,9 +1,9 @@
 /* eslint-disable linebreak-style */
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-undef */
-/* eslint-disable linebreak-style */
 /* eslint-disable quotes */
-/* eslint-disable linebreak-style */
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -15,6 +15,15 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator(value) {
+        return validator.isURL(value, {
+          protocols: ["http", "https"],
+          require_protocol: true,
+        });
+      },
+      message: "Неверный URL-адрес",
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,

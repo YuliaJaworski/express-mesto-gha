@@ -20,4 +20,8 @@ router.patch("/users/me", updateUserInfo);
 
 router.patch("/users/me/avatar", updateUserAvatar);
 
+// router.post("/signup", createUser);
+
+// router.post("/signin", login);
+
 module.exports = router;

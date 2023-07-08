@@ -1,10 +1,14 @@
 /* eslint-disable linebreak-style */
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable quotes */
-/* eslint-disable linebreak-style */
 const express = require("express");
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
 const userRoutes = require("./routes/users");
 const cardRoutes = require("./routes/cards");
+const auth = require("./middlwares/auth");
+const { createUser, login } = require("./controllers/users");
+const error = require("./middlwares/error");
 
 const app = express();
 
@@ -13,14 +17,12 @@ mongoose.connect("mongodb://127.0.0.1:27017/mestodb", {
 });
 
 app.use(express.json());
+app.use(cookieParser());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "6493f2839932b64635c39736",
-  };
+app.post("/signin", login);
+app.post("/signup", createUser);
 
-  next();
-});
+app.use(auth);
 
 app.use(userRoutes);
 app.use(cardRoutes);
@@ -28,6 +30,8 @@ app.use(cardRoutes);
 app.use("*", (req, res) => {
   res.status(404).send({ message: "Произошла ошибка на сервере" });
 });
+
+app.use(error);
 
 app.listen(3000, () => {
   console.log("Слушаю порт 3000");
