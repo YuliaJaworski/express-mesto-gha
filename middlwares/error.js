@@ -46,6 +46,8 @@ const error = (err, req, res, next) => {
     );
   } else if (err.message === "Пользователь не найден") {
     error = new TokenError("Введен несуществующий email");
+  } else if (err.message === "необходима авторизация") {
+    error = new TokenError("необходима авторизация");
   } else if (err.name === "CastError") {
     error = new ValidError("Переданы некорректные данные.");
   } else if (err.name === "ValidationError") {
