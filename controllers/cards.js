@@ -15,18 +15,16 @@ const getCards = (req, res, next) => {
 const deleteCardById = (req, res, next) => {
   Card.findByIdAndRemove(req.params.id)
     .orFail(() => new Error("Not found card"))
-    .then(() => {
-      if (req.params.owner._id === req.user._id) {
-        res.status(200).send({ message: "Карточка удалена" });
-      } else {
-        res.status(403).send({ message: "Вы не можете удалить эту карточку" });
+    .then((card) => {
+      if (card.owner.toString() !== req.user._id) {
+        throw new Error("Вы не можете удалить эту карточку");
       }
+      res.status(200).send({ message: "Карточка удалена" });
     })
     .catch(next);
 };
 
 const createCard = (req, res, next) => {
-  console.log(req.user._id);
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(201).send(card))

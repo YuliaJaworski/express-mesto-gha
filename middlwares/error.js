@@ -31,6 +31,13 @@ class TokenError extends Error {
   }
 }
 
+class DeleteError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 403;
+  }
+}
+
 const error = (err, req, res, next) => {
   let error;
 
@@ -48,6 +55,8 @@ const error = (err, req, res, next) => {
     error = new TokenError("Введен несуществующий email");
   } else if (err.message === "необходима авторизация") {
     error = new TokenError("необходима авторизация");
+  } else if (err.message === "Вы не можете удалить эту карточку") {
+    error = new DeleteError("Вы не можете удалить эту карточку");
   } else if (err.name === "CastError") {
     error = new ValidError("Переданы некорректные данные.");
   } else if (err.name === "ValidationError") {

@@ -1,4 +1,5 @@
 /* eslint-disable linebreak-style */
+/* eslint-disable newline-per-chained-call */
 /* eslint-disable comma-dangle */
 /* eslint-disable consistent-return */
 /* eslint-disable import/no-extraneous-dependencies */
@@ -15,11 +16,12 @@ const {
 
 const validateCard = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).messages({
+    name: Joi.string().required().min(2).max(30).messages({
       "string.min": 'Минимальная длина поля "name" - 2',
       "string.max": 'Максимальная длина поля "name" - 30',
     }),
     link: Joi.string()
+      .required()
       .uri({
         scheme: [/https?/],
       })
@@ -27,38 +29,20 @@ const validateCard = celebrate({
   }),
 });
 
+const validateCardId = celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().alphanum().length(24),
+  }),
+});
+
 routerCard.get("/cards", getCards);
 
-routerCard.delete(
-  "/cards/:id",
-  celebrate({
-    params: Joi.object().keys({
-      id: Joi.string().alphanum().length(24),
-    }),
-  }),
-  deleteCardById
-);
+routerCard.delete("/cards/:id", validateCardId, deleteCardById);
 
 routerCard.post("/cards", validateCard, createCard);
 
-routerCard.put(
-  "/cards/:id/likes",
-  celebrate({
-    params: Joi.object().keys({
-      id: Joi.string().alphanum().length(24),
-    }),
-  }),
-  likeCard
-);
+routerCard.put("/cards/:id/likes", validateCardId, likeCard);
 
-routerCard.delete(
-  "/cards/:id/likes",
-  celebrate({
-    params: Joi.object().keys({
-      id: Joi.string().alphanum().length(24),
-    }),
-  }),
-  dislikeCard
-);
+routerCard.delete("/cards/:id/likes", validateCardId, dislikeCard);
 
 module.exports = routerCard;
