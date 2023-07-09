@@ -36,22 +36,19 @@ const validateUserAvatar = celebrate({
   }),
 });
 
-const validateId = (req, res, next) => {
-  const idValid = Joi.string()
-    .regex(/^[0-9a-fA-F]{24}$/)
-    .required();
-  const { error } = idValid.validate(req.params.id);
-  if (error) {
-    return res.status(400).json({ message: "Некорректный id" });
-  }
-  next();
-};
-
 router.get("/users", getUsers);
 
 router.get("/users/me", getUser);
 
-router.get("/users/:id", validateId, getUserById);
+router.get(
+  "/users/:id",
+  celebrate({
+    params: Joi.object().keys({
+      id: Joi.string().alphanum().length(24),
+    }),
+  }),
+  getUserById
+);
 
 router.patch("/users/me", validateUserInfo, updateUserInfo);
 

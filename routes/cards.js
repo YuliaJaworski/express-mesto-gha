@@ -1,8 +1,8 @@
 /* eslint-disable linebreak-style */
+/* eslint-disable comma-dangle */
 /* eslint-disable consistent-return */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable quotes */
-/* eslint-disable linebreak-style */
 const routerCard = require("express").Router();
 const { celebrate, Joi } = require("celebrate");
 const {
@@ -27,25 +27,38 @@ const validateCard = celebrate({
   }),
 });
 
-const validateId = (req, res, next) => {
-  const idValid = Joi.string()
-    .regex(/^[0-9a-fA-F]{24}$/)
-    .required();
-  const { error } = idValid.validate(req.params.id);
-  if (error) {
-    return res.status(400).json({ message: "Некорректный id" });
-  }
-  next();
-};
-
 routerCard.get("/cards", getCards);
 
-routerCard.delete("/cards/:id", validateId, deleteCardById);
+routerCard.delete(
+  "/cards/:id",
+  celebrate({
+    params: Joi.object().keys({
+      id: Joi.string().alphanum().length(24),
+    }),
+  }),
+  deleteCardById
+);
 
 routerCard.post("/cards", validateCard, createCard);
 
-routerCard.put("/cards/:id/likes", validateId, likeCard);
+routerCard.put(
+  "/cards/:id/likes",
+  celebrate({
+    params: Joi.object().keys({
+      id: Joi.string().alphanum().length(24),
+    }),
+  }),
+  likeCard
+);
 
-routerCard.delete("/cards/:id/likes", validateId, dislikeCard);
+routerCard.delete(
+  "/cards/:id/likes",
+  celebrate({
+    params: Joi.object().keys({
+      id: Joi.string().alphanum().length(24),
+    }),
+  }),
+  dislikeCard
+);
 
 module.exports = routerCard;

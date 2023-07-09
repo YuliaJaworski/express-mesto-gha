@@ -13,13 +13,15 @@ const getCards = (req, res, next) => {
 };
 
 const deleteCardById = (req, res, next) => {
-  //   if (req.params.owner._id !== req.user._id) {
-  //     res.status(403).send({ message: "Попытка удалить чужую карточку." });
-  //     return;
-  //   }
   Card.findByIdAndRemove(req.params.id)
     .orFail(() => new Error("Not found card"))
-    .then(() => res.status(200).send({ message: "Карточка удалена" }))
+    .then(() => {
+      if (req.params.owner._id === req.user._id) {
+        res.status(200).send({ message: "Карточка удалена" });
+      } else {
+        res.status(403).send({ message: "Вы не можете удалить эту карточку" });
+      }
+    })
     .catch(next);
 };
 
