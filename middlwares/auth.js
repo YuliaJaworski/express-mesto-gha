@@ -12,7 +12,9 @@ const auth = (req, res, next) => {
 
   try {
     payload = jwt.verify(token, "SECRET");
-  } catch (err) {
+  } catch (e) {
+    const err = new Error("необходима авторизация");
+    err.statusCode = 401;
     next(err);
   }
 

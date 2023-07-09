@@ -24,6 +24,13 @@ class ServerError extends Error {
   }
 }
 
+class TokenError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 401;
+  }
+}
+
 const error = (err, req, res, next) => {
   let error;
 
@@ -37,10 +44,14 @@ const error = (err, req, res, next) => {
     error = new NotFoundError(
       "Переданы некорректные данные для постановки/снятии лайка."
     );
+  } else if (err.message === "Пользователь не найден") {
+    error = new TokenError("Введен несуществующий email");
   } else if (err.name === "CastError") {
     error = new ValidError("Переданы некорректные данные.");
   } else if (err.name === "ValidationError") {
     error = new ValidError("Переданы некорректные данные.");
+  } else if (err.name === "JsonWebTokenError") {
+    error = new TokenError("Неверный JWT");
   } else {
     error = new ServerError("Internal server Error");
   }

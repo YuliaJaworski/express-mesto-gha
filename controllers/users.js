@@ -19,6 +19,7 @@ const getUsers = (req, res, next) => {
     .catch(next);
 };
 
+// получить пользователя по id
 const getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .orFail(() => new Error("Not found"))
@@ -26,6 +27,14 @@ const getUserById = (req, res, next) => {
     .catch(next);
 };
 
+const getUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail(() => new Error("Not found"))
+    .then((user) => res.status(200).send(user))
+    .catch(next);
+};
+
+// создать пользователя
 const createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
 
@@ -47,6 +56,7 @@ const createUser = (req, res, next) => {
     .catch(next);
 };
 
+// изменить данные пользователя
 const updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
 
@@ -62,6 +72,7 @@ const updateUserInfo = (req, res, next) => {
     .catch(next);
 };
 
+// изменить аватар пользователя
 const updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
@@ -108,4 +119,5 @@ module.exports = {
   updateUserInfo,
   updateUserAvatar,
   login,
+  getUser,
 };
