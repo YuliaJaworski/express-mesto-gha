@@ -30,7 +30,7 @@ const validateUserAvatar = celebrate({
   body: Joi.object().keys({
     avatar: Joi.string()
       .uri({
-        scheme: ["git", /git\+https?/],
+        scheme: [/https?/],
       })
       .message('Поле "avatar" должно быть валидным url-адресом'),
   }),

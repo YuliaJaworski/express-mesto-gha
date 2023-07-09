@@ -21,7 +21,7 @@ const validateCard = celebrate({
     }),
     link: Joi.string()
       .uri({
-        scheme: ["git", /git\+https?/],
+        scheme: [/https?/],
       })
       .message('Поле "link" должно быть валидным url-адресом'),
   }),
