@@ -13,13 +13,17 @@ const getCards = (req, res, next) => {
 };
 
 const deleteCardById = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.id)
+  Card.findById(req.params.id)
     .orFail(() => new Error("Not found card"))
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
         throw new Error("Вы не можете удалить эту карточку");
       }
-      res.status(200).send({ message: "Карточка удалена" });
+      Card.findByIdAndRemove(card.id)
+        .then(() => {
+          res.status(200).send({ message: "Карточка удалена" });
+        })
+        .catch(next);
     })
     .catch(next);
 };

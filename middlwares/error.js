@@ -53,6 +53,8 @@ const error = (err, req, res, next) => {
     );
   } else if (err.message === "Пользователь не найден") {
     error = new TokenError("Введен несуществующий email");
+  } else if (err.message === "Маршрут не найден.") {
+    error = new NotFoundError("Маршрут не найден.");
   } else if (err.message === "необходима авторизация") {
     error = new TokenError("необходима авторизация");
   } else if (err.message === "Вы не можете удалить эту карточку") {

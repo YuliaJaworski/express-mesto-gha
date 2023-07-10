@@ -7,12 +7,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
+const { errors } = require("celebrate");
+const helmet = require("helmet");
+
 const userRoutes = require("./routes/users");
 const cardRoutes = require("./routes/cards");
 const auth = require("./middlwares/auth");
 const { createUser, login } = require("./controllers/users");
 const error = require("./middlwares/error");
-const { celebrate, Joi, errors } = require("celebrate");
+const validateUserBody = require("./middlwares/joiValidater");
 
 const app = express();
 
@@ -22,34 +25,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/mestodb", {
 
 app.use(express.json());
 app.use(cookieParser());
-
-const validateUserBody = celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).messages({
-      "string.min": 'Минимальная длина поля "name" - 2',
-      "string.max": 'Максимальная длина поля "name" - 30',
-    }),
-    about: Joi.string().min(2).max(30).messages({
-      "string.min": 'Минимальная длина поля "about" - 2',
-      "string.max": 'Максимальная длина поля "about" - 30',
-    }),
-    password: Joi.string().required().messages({
-      "string.empty": 'Поле "password" должно быть заполнено',
-    }),
-    email: Joi.string()
-      .required()
-      .email()
-      .message('Поле "email" должно быть валидным email-адресом')
-      .messages({
-        "string.empty": 'Поле "email" должно быть заполнено',
-      }),
-    avatar: Joi.string()
-      .uri({
-        scheme: [/https?/],
-      })
-      .message('Поле "avatar" должно быть валидным url-адресом'),
-  }),
-});
+app.use(helmet());
 
 app.post("/signin", validateUserBody, login);
 
@@ -60,8 +36,8 @@ app.use(auth);
 app.use(userRoutes);
 app.use(cardRoutes);
 
-app.use("*", (req, res) => {
-  res.status(404).send({ message: "Произошла ошибка на сервере" });
+app.use("*", (req, res, next) => {
+  next(new Error("Маршрут не найден."));
 });
 
 app.use(errors());
